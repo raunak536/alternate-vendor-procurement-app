@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { mockVendors } from '../data/mockData'
 import GlobeView from '../components/GlobeView'
 import './Results.css'
 
@@ -121,7 +120,7 @@ function Results() {
           )}
         </div>
       ) : (
-        <GlobeView vendors={mockVendors} />
+        <GlobeView vendors={vendors} formatSpend={formatSpend} />
       )}
     </div>
   )
@@ -130,12 +129,30 @@ function Results() {
 function VendorTile({ vendor, isExpanded, onToggle, formatSpend, formatDate, formatTimeAgo }) {
   const timeAgoStr = vendor.last_purchase_time_ago ? formatTimeAgo(vendor.last_purchase_time_ago) : null
   
+  // Capitalize company name for display
+  const capitalizeWords = (str) => {
+    if (!str) return ''
+    return str.split(' ').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    ).join(' ')
+  }
+  
+  // Use normalized company name if available, otherwise fall back to vendor_name
+  const rawCompany = vendor.company || vendor.vendor_name || 'Unknown Vendor'
+  const displayCompany = capitalizeWords(rawCompany)
+  const displayCountry = vendor.country ? vendor.country.toUpperCase() : null
+  
   return (
     <div className={`vendor-tile ${isExpanded ? 'expanded' : ''}`}>
       <div className="tile-header" onClick={onToggle}>
         <div className="tile-main">
           <div className="vendor-name-row">
-            <div className="vendor-name">{vendor.vendor_name}</div>
+            <div className="vendor-name">
+              {displayCompany}
+              {displayCountry && (
+                <span className="vendor-country"> • {displayCountry}</span>
+              )}
+            </div>
           </div>
           <div className="vendor-meta">
             <span className="vendor-spend">Total Spend: {formatSpend(vendor.total_spend)}</span>
@@ -161,9 +178,25 @@ function VendorTile({ vendor, isExpanded, onToggle, formatSpend, formatDate, for
         <div className="tile-content">
           <div className="vendor-details">
             <div className="detail-row">
+              <span className="detail-label">Company:</span>
+              <span className="detail-value">{displayCompany}</span>
+            </div>
+            {displayCountry && (
+              <div className="detail-row">
+                <span className="detail-label">Country:</span>
+                <span className="detail-value">{displayCountry}</span>
+              </div>
+            )}
+            <div className="detail-row">
               <span className="detail-label">Vendor Code:</span>
               <span className="detail-value">{vendor.vendor_code}</span>
             </div>
+            {vendor.vendor_name && vendor.vendor_name !== displayCompany && (
+              <div className="detail-row">
+                <span className="detail-label">Original Vendor Name:</span>
+                <span className="detail-value">{vendor.vendor_name}</span>
+              </div>
+            )}
             <div className="detail-row">
               <span className="detail-label">Total Spent (FY23-FY25):</span>
               <span className="detail-value spend-highlight">{formatSpend(vendor.total_spend)}</span>

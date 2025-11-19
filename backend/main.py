@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from datetime import datetime, date
+import re
 
 app = FastAPI()
 
@@ -17,6 +18,317 @@ top_skus = sku_df[sku_df['cum_pct'] <= 0.80].copy()
 top_skus['item_lower'] = top_skus['item'].str.lower()
 
 spend_df = pd.read_parquet('../indirect_spends_fy23_to_fy25.par')
+
+# Parent Company to Country Mapping
+PARENT_COMPANY_COUNTRY_MAPPING = {
+    # Major biopharma companies
+    'mylan': 'usa',
+    'viatris': 'usa',
+    'lupin': 'india',
+    'fujifilm kyowa kirin': 'japan',
+    'fujifilm': 'japan',
+    'kyowa kirin': 'japan',
+    'anderson brecon': 'uk',
+    'andersonbrecon': 'uk',
+    'genomic scientific': 'usa',
+    'genetix biotech': 'usa',
+    'mckesson': 'usa',
+    'bioton': 'poland',
+    'bcil': 'india',
+    'accuristix': 'usa',
+    'espee biopharma': 'india',
+    'invitrogen bioservices': 'usa',
+    'eris lifesciences': 'india',
+    'cencora': 'usa',
+    'bgp products': 'italy',
+    'value point systems': 'usa',
+    'centre specialites pharm': 'france',
+    'bmclinical': 'netherlands',
+    'aenorasis': 'spain',
+    'prespack': 'poland',
+    'eurofins discoverx': 'usa',
+    'avosano industrie': 'germany',
+    'rvr enterprises': 'india',
+    'nomeco': 'denmark',
+    'millmount healthcare': 'ireland',
+    'celerion': 'usa',
+    'hp india': 'india',
+    'famar': 'greece',
+    'wns global services': 'india',
+    'loxxess pharma': 'germany',
+    'wuxi biologics': 'china',
+    'federal compliance solut': 'usa',
+    'specialty electronic mat': 'usa',
+    'merge west': 'usa',
+    'integrated business syst': 'usa',
+    'jt autolease': 'uk',
+    'element fleet': 'canada',
+    'depo-packs': 'italy',
+    'taylor wessing': 'uk',
+    'g-net technologies': 'india',
+    'sonexus health access': 'usa',
+    'sigma aldrich': 'usa',
+    'ikris pharma': 'india',
+    'fisher clinical services': 'usa',
+    'sandoz': 'switzerland',
+    'globyz pharma': 'india',
+    'infosys': 'india',
+    'koerber pharma': 'germany',
+    'aon consulting': 'uk',
+    'van mossel autolease': 'netherlands',
+    'cardinal health': 'usa',
+    'ernst & young': 'uk',
+    'ernst young': 'uk',
+    'advantage point solution': 'usa',
+    'dxc technology': 'usa',
+    'covermymeds': 'usa',
+    'patheon manufacturing': 'usa',
+    'lambda therapeutic resea': 'india',
+    'acs pharmaprotect': 'uk',
+    'beacon secretari': 'uk',
+    'veeva systems': 'usa',
+    'contora': 'usa',
+    'crowell & moring': 'usa',
+    'ppd development': 'usa',
+    'goodwin procter': 'usa',
+    'grant thornton': 'uk',
+    'integrichain': 'usa',
+    'sartorius stedim bioouts': 'germany',
+    'catalent pharma solution': 'usa',
+    'becton dickinson': 'usa',
+    'almac clinical services': 'uk',
+    'alcura health espana': 'spain',
+    'deloitte': 'uk',
+    'cognizant technology sol': 'usa',
+    'pricewaterhousecoopers': 'uk',
+    'united drug distributors': 'ireland',
+    'laboratorios pisa': 'mexico',
+    'zelle biotechnology': 'usa',
+    'microbee life science': 'india',
+    'shell spark': 'uk',
+    'ald autoleasing': 'germany',
+    # Pharmaceutical distributors and logistics
+    'alloga': 'switzerland',
+    'tamro': 'finland',
+    'phoenix': 'germany',
+    'iqvia': 'usa',
+    # Additional major pharma companies
+    'pfizer': 'usa',
+    'roche': 'switzerland',
+    'novartis': 'switzerland',
+    'sanofi': 'france',
+    'glaxosmithkline': 'uk',
+    'gsk': 'uk',
+    'astrazeneca': 'uk',
+    'merck': 'usa',
+    'johnson & johnson': 'usa',
+    'bayer': 'germany',
+    'takeda': 'japan',
+    'gilead': 'usa',
+    'amgen': 'usa',
+    'abbvie': 'usa',
+    'bristol-myers squibb': 'usa',
+    'eli lilly': 'usa',
+    'biogen': 'usa',
+    'regeneron': 'usa',
+    'vertex': 'usa',
+    'moderna': 'usa',
+    'biontech': 'germany',
+    'teva': 'israel',
+    'novo nordisk': 'denmark',
+    'boehringer ingelheim': 'germany',
+    'ucb': 'belgium',
+    'servier': 'france',
+    'ipsen': 'france',
+    'astellas': 'japan',
+    'daiichi sankyo': 'japan',
+    'eisai': 'japan',
+    'otsuka': 'japan',
+    'chugai': 'japan',
+    'mitsubishi tanabe': 'japan',
+    'sumitomo dainippon': 'japan',
+    'cipla': 'india',
+    'dr reddy': 'india',
+    'sun pharma': 'india',
+    'torrent pharma': 'india',
+    'aurobindo': 'india',
+    'glenmark': 'india',
+    'zydus': 'india',
+    'wockhardt': 'india',
+    'piramal': 'india',
+    'jubilant': 'india',
+    'biocon': 'india',
+    'serum institute': 'india',
+    'bharat biotech': 'india',
+    'lonza': 'switzerland',
+    'csl': 'australia',
+    'grifols': 'spain',
+    'samsung biologics': 'south korea',
+    'celltrion': 'south korea',
+    'beigene': 'china',
+    'wuxi apptec': 'china',
+}
+
+def extract_company_and_country(raw_name):
+    """
+    Extracts company name and country from a raw vendor name string.
+    Uses parent company mapping as default when country is not detected.
+    
+    Args:
+        raw_name: Raw vendor name as seen in parquet files (e.g., "mylan ire healthcare lim", 
+                  "alloga(nederland) b v", "viatris healthcare gmbh")
+    
+    Returns:
+        tuple: (company_name, country)
+            - company_name: Cleaned company name (lowercase, legal suffixes removed)
+            - country: Country name (lowercase) or None if not found
+    """
+    if pd.isnull(raw_name):
+        return (None, None)
+    
+    s = str(raw_name).strip()
+    
+    # Remove leading IDs
+    s = re.sub(r'^\d+\s+', '', s)
+    
+    # Lowercase
+    s = s.lower()
+    
+    # Extract country from parentheses first
+    paren_content = re.findall(r'\(([^)]+)\)', s)
+    s_no_paren = re.sub(r'\([^)]+\)', '', s)
+    
+    # Country mapping patterns
+    country_patterns = {
+        r'\b(uk|united kingdom)\b': 'uk',
+        r'\b(ire|ireland)\b': 'ireland',
+        r'\b(österreich|austria)\b': 'austria',
+        r'\b(espana|españa|spain)\b': 'spain',
+        r'\b(nederland|netherlands|nl)\b': 'netherlands',
+        r'\b(hellas|greece)\b': 'greece',
+        r'\b(canada|ca)\b': 'canada',
+        r'\b(switzerland|ch)\b': 'switzerland',
+        r'\b(hong kong|hk)\b': 'hong kong',
+        r'\b(india|in)\b': 'india',
+        r'\b(usa|us|united states)\b': 'usa',
+        r'\b(germany|de)\b': 'germany',
+        r'\b(france|fr)\b': 'france',
+        r'\b(italy|it)\b': 'italy',
+        r'\b(mexico|mx)\b': 'mexico',
+        r'\b(china|prc)\b': 'china',
+        r'\b(poland|pl)\b': 'poland',
+        r'\b(sweden|se)\b': 'sweden',
+        r'\b(japan|jp)\b': 'japan',
+        r'\b(australia|au)\b': 'australia',
+        r'\b(belgium|be)\b': 'belgium',
+        r'\b(brazil|br)\b': 'brazil',
+        r'\b(hungary|hu)\b': 'hungary',
+        r'\b(portugal|pt)\b': 'portugal',
+        r'\b(denmark|dk)\b': 'denmark',
+        r'\b(norway|no)\b': 'norway',
+        r'\b(russia|ru)\b': 'russia',
+        r'\b(finland|fi)\b': 'finland',
+        r'\b(israel|il)\b': 'israel',
+        r'\b(south korea|korea|kr)\b': 'south korea',
+    }
+    
+    # Extract country from parentheses first
+    extracted_country = None
+    for part in paren_content:
+        for pattern, country in country_patterns.items():
+            if re.search(pattern, part, flags=re.IGNORECASE):
+                extracted_country = country
+                break
+        if extracted_country:
+            break
+    
+    # If not in parentheses, check main string
+    if not extracted_country:
+        for pattern, country in country_patterns.items():
+            if re.search(pattern, s_no_paren, flags=re.IGNORECASE):
+                extracted_country = country
+                break
+    
+    # Clean company name: remove legal suffixes
+    s = s_no_paren
+    legal_suffixes = [
+        r'\b(private|pvt)\b',
+        r'\b(limited|ltd)\b',
+        r'\b(llp|llc)\b',
+        r'\b(b\.v\.|bv)\b',
+        r'\b(s\.a\.|sa)\b',
+        r'\b(inc|incorporated)\b',
+        r'\b(plc|public limited company)\b',
+        r'\b(gmbh)\b',
+        r'\b(co\.|company)\b',
+        r'\b(corp|corporation)\b',
+        r'\b(ag|aktiengesellschaft)\b',
+        r'\b(oy|oyj)\b',
+        r'\b(sdn bhd)\b',
+        r'\b(s\.l\.|sl)\b',
+        r'\b(firm)\b',
+        r'\b(spzoo|sp\.z\.o\.o\.)\b',
+        r'\b(doo|d\.o\.o\.)\b',
+        r'\b(srl|s\.r\.l\.)\b',
+        r'\b(ou|oü)\b',
+        r'\b(uab)\b',
+        r'\b(sia)\b',
+        r'\b(ab)\b',
+        r'\b(eesti)\b',
+    ]
+    
+    for pattern in legal_suffixes:
+        s = re.sub(pattern, '', s)
+    
+    # Remove country mentions from company name (if found)
+    if extracted_country:
+        for pattern in country_patterns.keys():
+            s = re.sub(pattern, '', s, flags=re.IGNORECASE)
+        # Also remove the country value itself if it appears
+        s = re.sub(re.escape(extracted_country), '', s, flags=re.IGNORECASE)
+    
+    # Remove connectors and clean up
+    s = re.sub(r'\b(and|&|,)\b', ' ', s)
+    s = re.sub(r'[.,]+$', '', s)
+    s = re.sub(r'\s+', ' ', s)
+    
+    company_name = s.strip()
+    
+    # If country was not extracted, try to match company name to parent company mapping
+    if not extracted_country and company_name:
+        # Try exact match first
+        if company_name in PARENT_COMPANY_COUNTRY_MAPPING:
+            extracted_country = PARENT_COMPANY_COUNTRY_MAPPING[company_name]
+        else:
+            # Try partial matching - check if any key in mapping is contained in company name
+            for parent_company, country in PARENT_COMPANY_COUNTRY_MAPPING.items():
+                # Check if parent company name appears in cleaned company name
+                if parent_company in company_name or company_name in parent_company:
+                    # Additional check: ensure significant overlap
+                    if len(parent_company) >= 3 and len(company_name) >= 3:
+                        # Calculate overlap ratio
+                        shorter = min(len(parent_company), len(company_name))
+                        longer = max(len(parent_company), len(company_name))
+                        overlap_ratio = shorter / longer if longer > 0 else 0
+                        
+                        # If at least 60% overlap or one is contained in the other
+                        if overlap_ratio >= 0.6 or parent_company in company_name:
+                            extracted_country = country
+                            break
+            
+            # If still not found, try word-by-word matching
+            if not extracted_country:
+                company_words = set(company_name.split())
+                for parent_company, country in PARENT_COMPANY_COUNTRY_MAPPING.items():
+                    parent_words = set(parent_company.split())
+                    # If at least 50% of words match
+                    if len(company_words) > 0 and len(parent_words) > 0:
+                        common_words = company_words.intersection(parent_words)
+                        if len(common_words) >= min(2, len(parent_words) * 0.5):
+                            extracted_country = country
+                            break
+    
+    return (company_name if company_name else None, extracted_country)
 
 def parse_vendor_string(vendor_str: str) -> dict:
     """
@@ -164,6 +476,11 @@ def get_vendors(sku: str = ""):
     parsed_vendors = vendor_spend['vendor'].apply(parse_vendor_string)
     vendor_spend['vendor_code'] = parsed_vendors.apply(lambda x: x['vendor_code'])
     vendor_spend['vendor_name'] = parsed_vendors.apply(lambda x: x['vendor_name'])
+    
+    # Extract normalized company name and country
+    company_country = vendor_spend['vendor_name'].apply(extract_company_and_country)
+    vendor_spend['company'] = company_country.apply(lambda x: x[0])
+    vendor_spend['country'] = company_country.apply(lambda x: x[1])
     
     # Calculate last purchase date and amount for each vendor
     def get_last_purchase_info(vendor_str):

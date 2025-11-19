@@ -149,6 +149,13 @@
   letter-spacing: -0.01em;
 }
 
+.vendor-country {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6e6e73;
+  margin-left: 0.5rem;
+}
+
 .purchased-badge {
   padding: 0.25rem 0.6rem;
   background: #e8ebff;
