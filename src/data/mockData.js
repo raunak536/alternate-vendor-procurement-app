@@ -6,24 +6,28 @@ export const mockVendors = [
     source: 'INT',
     isCurrentPartner: true,
     isPreferred: true,
-    unitPrice: 1250,
-    totalEstCost: 625000,
-    availableQty: 1000,
-    region: 'North America',
+    unitPrice: 12,
+    totalEstCost: 6000,
+    availableQty: 50000,
+    region: 'India',
     leadTime: '2 Weeks',
     suitabilityScore: 95,
-    certifications: ['GMP', 'ISO 9001', 'Internal Approved'],
+    certifications: ['GMP', 'ISO 9001'],
+    shelfLife: '24 Months',
+    packaging: 'Tripled wrapped (two plastic sleeve + one foil) (25/pack)',
+    storage: 'RT (2 - 25 deg C)',
+    locking: 'Standard',
     internalHistory: {
       partnerSince: 2018,
-      lifetimeSpend: 12400000
+      lifetimeSpend: 1200000
     },
     riskAssessment: {
       level: 'Low Risk',
       description: 'Verified partner with consistent history.'
     },
     website: 'www.pharmasourceglobal.com',
-    lat: 40.7128,
-    lng: -74.0060
+    lat: 19.0760,
+    lng: 72.8777
   },
   {
     id: 2,
@@ -32,13 +36,17 @@ export const mockVendors = [
     isCurrentPartner: false,
     isPreferred: false,
     isBestValue: true,
-    unitPrice: 1100,
-    totalEstCost: 550000,
-    availableQty: 5000,
-    region: 'Europe',
+    unitPrice: 8.50,
+    totalEstCost: 4250,
+    availableQty: 100000,
+    region: 'India',
     leadTime: '4 Weeks',
     suitabilityScore: 94,
-    certifications: ['GMP', 'ISO 9001', 'EU GMP'],
+    certifications: ['ISO 9001'],
+    shelfLife: '36 Months',
+    packaging: 'Standard Box (50/pack)',
+    storage: 'RT (2 - 25 deg C)',
+    locking: 'Standard',
     internalHistory: null,
     riskAssessment: null,
     website: 'www.biochemsolutions.eu',
@@ -51,43 +59,54 @@ export const mockVendors = [
     source: 'EXT',
     isCurrentPartner: false,
     isPreferred: false,
-    unitPrice: 950,
-    totalEstCost: 475000,
-    availableQty: 500,
-    region: 'Asia',
+    unitPrice: 9.50,
+    totalEstCost: 4750,
+    availableQty: 20000,
+    region: 'Asia Pacific',
     leadTime: '6 Weeks',
     suitabilityScore: 91,
-    certifications: ['GMP', 'ISO 9001'],
+    certifications: ['GMP'],
+    shelfLife: '24 Months',
+    packaging: 'Bag (25/pack)',
+    storage: 'RT (Up to 25 deg C)',
+    locking: 'Standard',
     internalHistory: null,
-    riskAssessment: null,
+    riskAssessment: {
+      level: 'Medium Risk',
+      description: 'Good specs, but longer lead time.'
+    },
     website: 'www.genericapimakers.com',
     lat: 22.3193,
     lng: 114.1694
   },
   {
     id: 4,
-    name: 'Fuji Film',
+    name: 'Canada Health Imports',
     source: 'INT',
     isCurrentPartner: true,
     isPreferred: false,
-    unitPrice: 1280,
-    totalEstCost: 640000,
-    availableQty: 600,
-    region: 'North America',
+    unitPrice: 12.80,
+    totalEstCost: 6400,
+    availableQty: 6000,
+    region: 'Europe',
     leadTime: '2 Weeks',
     suitabilityScore: 89,
-    certifications: ['GMP', 'ISO 9001', 'FDA Approved'],
+    certifications: ['US FDA'],
+    shelfLife: '24 Months',
+    packaging: 'Drum (25/pack)',
+    storage: 'RT (2-8 deg C)',
+    locking: 'Standard',
     internalHistory: {
       partnerSince: 2020,
-      lifetimeSpend: 2100000
+      lifetimeSpend: 210000
     },
     riskAssessment: {
       level: 'Low Risk',
       description: 'Established partner with good track record.'
     },
-    website: 'www.fujifilm.com',
-    lat: 35.6762,
-    lng: 139.6503
+    website: 'www.canadahealthimports.com',
+    lat: 45.4215,
+    lng: -75.6972
   },
   {
     id: 5,
@@ -96,16 +115,20 @@ export const mockVendors = [
     isCurrentPartner: true,
     isPreferred: false,
     isFastest: true,
-    unitPrice: 1400,
-    totalEstCost: 700000,
-    availableQty: 2500,
+    unitPrice: 14,
+    totalEstCost: 7000,
+    availableQty: 25000,
     region: 'North America',
     leadTime: '1 Week',
     suitabilityScore: 88,
     certifications: ['GMP', 'ISO 9001', 'US FDA'],
+    shelfLife: '18 Months',
+    packaging: 'Vacuum sealed (10/pack)',
+    storage: 'RT (2 - 25 deg C)',
+    locking: 'Premium',
     internalHistory: {
       partnerSince: 2021,
-      lifetimeSpend: 3500000
+      lifetimeSpend: 350000
     },
     riskAssessment: {
       level: 'Low Risk',
@@ -121,13 +144,17 @@ export const mockVendors = [
     source: 'EXT',
     isCurrentPartner: false,
     isPreferred: false,
-    unitPrice: 850,
-    totalEstCost: 425000,
-    availableQty: 3000,
-    region: 'Asia',
+    unitPrice: 7.50,
+    totalEstCost: 3750,
+    availableQty: 30000,
+    region: 'India',
     leadTime: '5 Weeks',
     suitabilityScore: 86,
     certifications: ['GMP', 'WHO GMP'],
+    shelfLife: '24 Months',
+    packaging: 'Standard Box (100/pack)',
+    storage: 'RT (Up to 30 deg C)',
+    locking: 'Standard',
     internalHistory: null,
     riskAssessment: {
       level: 'Medium Risk',
@@ -143,13 +170,17 @@ export const mockVendors = [
     source: 'EXT',
     isCurrentPartner: false,
     isPreferred: false,
-    unitPrice: 1350,
-    totalEstCost: 675000,
-    availableQty: 800,
+    unitPrice: 13.50,
+    totalEstCost: 6750,
+    availableQty: 8000,
     region: 'Europe',
     leadTime: '3 Weeks',
     suitabilityScore: 92,
     certifications: ['GMP', 'ISO 9001', 'EU GMP', 'FDA Approved'],
+    shelfLife: '30 Months',
+    packaging: 'Triple wrapped (25/pack)',
+    storage: 'RT (2 - 25 deg C)',
+    locking: 'Premium',
     internalHistory: null,
     riskAssessment: {
       level: 'Low Risk',
@@ -165,18 +196,126 @@ export const mockVendors = [
     source: 'EXT',
     isCurrentPartner: false,
     isPreferred: false,
-    unitPrice: 1180,
-    totalEstCost: 590000,
-    availableQty: 400,
-    region: 'Oceania',
+    unitPrice: 11.80,
+    totalEstCost: 5900,
+    availableQty: 4000,
+    region: 'Asia Pacific',
     leadTime: '4 Weeks',
     suitabilityScore: 84,
     certifications: ['GMP', 'TGA Approved'],
+    shelfLife: '24 Months',
+    packaging: 'Standard Box (50/pack)',
+    storage: 'RT (Up to 25 deg C)',
+    locking: 'Standard',
     internalHistory: null,
     riskAssessment: null,
     website: 'www.chemsupplyau.com.au',
     lat: -33.8688,
     lng: 151.2093
+  },
+  {
+    id: 9,
+    name: 'Tokyo Pharma Supply',
+    source: 'EXT',
+    isCurrentPartner: false,
+    isPreferred: false,
+    unitPrice: 15.20,
+    totalEstCost: 7600,
+    availableQty: 15000,
+    region: 'Asia Pacific',
+    leadTime: '3 Weeks',
+    suitabilityScore: 90,
+    certifications: ['GMP', 'ISO 9001', 'PMDA'],
+    shelfLife: '36 Months',
+    packaging: 'Vacuum sealed (20/pack)',
+    storage: 'RT (2 - 25 deg C)',
+    locking: 'Premium',
+    internalHistory: null,
+    riskAssessment: {
+      level: 'Low Risk',
+      description: 'High quality Japanese manufacturer.'
+    },
+    website: 'www.tokyopharmasupply.jp',
+    lat: 35.6762,
+    lng: 139.6503
+  },
+  {
+    id: 10,
+    name: 'Nordic BioMed',
+    source: 'EXT',
+    isCurrentPartner: false,
+    isPreferred: false,
+    unitPrice: 16.00,
+    totalEstCost: 8000,
+    availableQty: 5000,
+    region: 'Europe',
+    leadTime: '2 Weeks',
+    suitabilityScore: 87,
+    certifications: ['GMP', 'ISO 9001', 'EU GMP'],
+    shelfLife: '24 Months',
+    packaging: 'Cold chain (10/pack)',
+    storage: 'RT (2 - 8 deg C)',
+    locking: 'Premium',
+    internalHistory: null,
+    riskAssessment: {
+      level: 'Low Risk',
+      description: 'Premium Scandinavian supplier.'
+    },
+    website: 'www.nordicbiomed.se',
+    lat: 59.3293,
+    lng: 18.0686
+  },
+  {
+    id: 11,
+    name: 'Mumbai Chemicals Ltd',
+    source: 'EXT',
+    isCurrentPartner: false,
+    isPreferred: false,
+    unitPrice: 6.80,
+    totalEstCost: 3400,
+    availableQty: 80000,
+    region: 'India',
+    leadTime: '5 Weeks',
+    suitabilityScore: 82,
+    certifications: ['GMP'],
+    shelfLife: '18 Months',
+    packaging: 'Bulk bag (100/pack)',
+    storage: 'RT (Up to 30 deg C)',
+    locking: 'Standard',
+    internalHistory: null,
+    riskAssessment: {
+      level: 'Medium Risk',
+      description: 'Budget option with longer lead time.'
+    },
+    website: 'www.mumbaichemicals.in',
+    lat: 19.0760,
+    lng: 72.8777
+  },
+  {
+    id: 12,
+    name: 'Brazil Pharma Export',
+    source: 'EXT',
+    isCurrentPartner: false,
+    isPreferred: false,
+    unitPrice: 10.50,
+    totalEstCost: 5250,
+    availableQty: 12000,
+    region: 'North America',
+    leadTime: '4 Weeks',
+    suitabilityScore: 83,
+    certifications: ['GMP', 'ANVISA'],
+    shelfLife: '24 Months',
+    packaging: 'Standard Box (50/pack)',
+    storage: 'RT (2 - 25 deg C)',
+    locking: 'Standard',
+    internalHistory: null,
+    riskAssessment: {
+      level: 'Medium Risk',
+      description: 'South American supplier with good capacity.'
+    },
+    website: 'www.brazilpharmaexport.com.br',
+    lat: -23.5505,
+    lng: -46.6333
   }
 ]
 
@@ -209,9 +348,9 @@ export const api = {
   async searchProducts(query) {
     await new Promise(r => setTimeout(r, 300))
     const products = [
-      { id: 1, name: 'Amoxicillin API', casNumber: '26787-78-0', category: 'Antibiotics' },
-      { id: 2, name: 'Amoxicillin Trihydrate', casNumber: '61336-70-7', category: 'Antibiotics' },
-      { id: 3, name: 'Amoxicillin Sodium', casNumber: '34642-77-8', category: 'Antibiotics' },
+      { id: 1, name: 'TSA Plates', casNumber: '—', category: 'Lab Consumables' },
+      { id: 2, name: 'Amoxicillin API', casNumber: '26787-78-0', category: 'Antibiotics' },
+      { id: 3, name: 'Amoxicillin Trihydrate', casNumber: '61336-70-7', category: 'Antibiotics' },
       { id: 4, name: 'Paracetamol API', casNumber: '103-90-2', category: 'Analgesics' },
       { id: 5, name: 'Ibuprofen API', casNumber: '15687-27-1', category: 'NSAIDs' }
     ]
@@ -227,11 +366,11 @@ export const api = {
     let vendors = [...mockVendors]
     
     // Apply filters
-    if (filters.source) {
+    if (filters.source?.length) {
       vendors = vendors.filter(v => filters.source.includes(v.source))
     }
-    if (filters.minReliability) {
-      vendors = vendors.filter(v => v.suitabilityScore >= filters.minReliability * 20)
+    if (filters.minSuitability) {
+      vendors = vendors.filter(v => v.suitabilityScore >= filters.minSuitability)
     }
     if (filters.certifications?.length) {
       vendors = vendors.filter(v => 
@@ -243,8 +382,11 @@ export const api = {
         v.unitPrice >= filters.priceRange[0] && v.unitPrice <= filters.priceRange[1]
       )
     }
-    if (filters.showCurrentPartner) {
+    if (filters.currentPartnerOnly) {
       vendors = vendors.filter(v => v.isCurrentPartner)
+    }
+    if (filters.locations?.length) {
+      vendors = vendors.filter(v => filters.locations.includes(v.region))
     }
     
     // Sort by suitability score
@@ -295,7 +437,7 @@ export const api = {
         : ''
     
     return {
-      recommendation: `Based on current input-cost assumptions, switching to ${bestValue.name} could yield a ${savingsPercent}% savings (approx. $${(savings/1000).toFixed(0)},000)${leadTimeNote}.`,
+      recommendation: `Based on current input-cost assumptions, switching to ${bestValue.name} could yield a ${savingsPercent}% savings (approx. $${savings.toLocaleString()})${leadTimeNote}.`,
       highlightVendor: bestValue.name
     }
   },

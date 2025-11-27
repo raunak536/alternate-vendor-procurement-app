@@ -180,24 +180,20 @@
   line-height: 1.4;
 }
 
-.price-range-inputs {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+/* Filled checkbox style */
+.filter-checkbox.filled input[type="checkbox"] {
+  accent-color: #1a1a1a;
 }
 
-.price-label {
-  font-size: 0.75rem;
-  color: #666;
-  min-width: 50px;
+.filter-checkbox.filled input[type="checkbox"]:checked {
+  background: #1a1a1a;
 }
 
-.price-label:last-child {
-  text-align: right;
-}
-
-.slider-container {
-  flex: 1;
+/* Dual Range / Price Range */
+.dual-range-container {
+  position: relative;
+  height: 20px;
+  margin-bottom: 0.5rem;
 }
 
 .price-slider {
@@ -205,37 +201,48 @@
   accent-color: #1a1a1a;
 }
 
+.price-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
 .benchmark-note {
   font-size: 0.7rem;
   color: #999;
+  background: #f9f9f9;
+  padding: 0.5rem;
+  border-radius: 4px;
   margin-top: 0.5rem;
 }
 
-.reliability-buttons {
+/* Suitability Slider */
+.suitability-slider-container {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.suitability-slider {
+  width: 100%;
+  accent-color: #1a1a1a;
+}
+
+.suitability-labels {
   display: flex;
-  gap: 0.25rem;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #666;
 }
 
-.reliability-btn {
-  width: 32px;
-  height: 32px;
-  border: 1px solid #e5e5e5;
-  background: #fff;
+.suitability-labels .current-value {
+  font-weight: 600;
+  color: #1a1a1a;
+  background: #f5f5f5;
+  padding: 0.2rem 0.5rem;
   border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.reliability-btn:hover {
-  border-color: #1a1a1a;
-}
-
-.reliability-btn.active {
-  background: #1a1a1a;
-  color: #fff;
-  border-color: #1a1a1a;
 }
 
 .filter-actions {
@@ -539,7 +546,7 @@
 /* Vendor Metrics */
 .vendor-metrics {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(5, 1fr);
   gap: 1rem;
   padding: 1rem 0;
   border-top: 1px solid #f5f5f5;
@@ -550,6 +557,13 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+}
+
+.metric.highlight {
+  background: #fffbeb;
+  padding: 0.75rem;
+  margin: -0.75rem 0 -0.75rem -0.75rem;
+  border-radius: 6px;
 }
 
 .metric-label {
@@ -563,7 +577,7 @@
 }
 
 .metric-value {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #1a1a1a;
 }
@@ -575,6 +589,53 @@
 
 .metric-sub {
   font-size: 0.75rem;
+  color: #666;
+}
+
+/* Vendor Details Row */
+.vendor-details-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.detail-value {
+  font-size: 0.85rem;
+  color: #1a1a1a;
+}
+
+.cert-badges-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.cert-badge-small {
+  display: inline-flex;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
   color: #666;
 }
 

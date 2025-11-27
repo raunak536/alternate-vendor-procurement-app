@@ -18,15 +18,15 @@ function Results() {
   
   // Filter states
   const [filters, setFilters] = useState({
-    estUnitCost: 1250,
+    estUnitCost: 12,
     estQuantity: 500,
     priceBenchmark: true,
-    suggestSubstitutes: false,
-    showCurrentPartner: false,
+    currentPartnerOnly: false,
     source: ['INT', 'EXT'],
-    priceRange: [500, 5000],
+    priceRange: [0, 10000],
     certifications: [],
-    minReliability: 0
+    locations: [],
+    minSuitability: 75
   })
 
   // Fetch vendors when query or filters change
@@ -64,7 +64,7 @@ function Results() {
 
   const handleCompare = () => {
     if (selectedVendors.length >= 2) {
-      navigate(`/compare?vendors=${selectedVendors.join(',')}`)
+      navigate(`/compare?vendors=${selectedVendors.join(',')}&q=${encodeURIComponent(query)}`)
     }
   }
 
@@ -72,7 +72,7 @@ function Results() {
     return new Intl.NumberFormat('en-US', { 
       style: 'currency', 
       currency: 'USD',
-      maximumFractionDigits: 0
+      maximumFractionDigits: 2
     }).format(amount)
   }
 
@@ -147,7 +147,7 @@ function Results() {
             </div>
             
             <div className="filter-toggle">
-              <span>Price Benchmark: INT vs EXT</span>
+              <span>Benchmark: INT vs EXT</span>
               <label className="toggle-switch">
                 <input 
                   type="checkbox" 
@@ -174,35 +174,34 @@ function Results() {
               <h3>FILTERS</h3>
             </div>
 
-            <div className="filter-checkbox">
-              <input 
-                type="checkbox" 
-                id="suggestSubs"
-                checked={filters.suggestSubstitutes}
-                onChange={(e) => setFilters(f => ({ ...f, suggestSubstitutes: e.target.checked }))}
-              />
-              <div>
-                <label htmlFor="suggestSubs">Suggest Substitutes</label>
-                <p className="filter-hint">Automatically find alt. materials if quantity is insufficient.</p>
-              </div>
-            </div>
-
             <div className="filter-group">
-              <h4>Relationship Status</h4>
+              <h4>
+                Relationship Status
+                <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4M12 8h.01" />
+                </svg>
+              </h4>
               <div className="filter-checkbox">
                 <input 
                   type="checkbox" 
                   id="currentPartner"
-                  checked={filters.showCurrentPartner}
-                  onChange={(e) => setFilters(f => ({ ...f, showCurrentPartner: e.target.checked }))}
+                  checked={filters.currentPartnerOnly}
+                  onChange={(e) => setFilters(f => ({ ...f, currentPartnerOnly: e.target.checked }))}
                 />
-                <label htmlFor="currentPartner">Show Current Partner</label>
+                <label htmlFor="currentPartner">Current Partner Only</label>
               </div>
             </div>
 
             <div className="filter-group">
-              <h4>Source</h4>
-              <div className="filter-checkbox">
+              <h4>
+                Source
+                <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4M12 8h.01" />
+                </svg>
+              </h4>
+              <div className="filter-checkbox filled">
                 <input 
                   type="checkbox" 
                   id="sourceInt"
@@ -216,7 +215,7 @@ function Results() {
                 />
                 <label htmlFor="sourceInt">Internal (INT)</label>
               </div>
-              <div className="filter-checkbox">
+              <div className="filter-checkbox filled">
                 <input 
                   type="checkbox" 
                   id="sourceExt"
@@ -240,30 +239,36 @@ function Results() {
                   <path d="M12 16v-4M12 8h.01" />
                 </svg>
               </h4>
-              <div className="price-range-inputs">
-                <span className="price-label">${filters.priceRange[0]}</span>
-                <div className="slider-container">
-                  <input 
-                    type="range" 
-                    min="500" 
-                    max="2000" 
-                    step="50"
-                    value={filters.priceRange[0]}
-                    onChange={(e) => setFilters(f => ({ ...f, priceRange: [+e.target.value, f.priceRange[1]] }))}
-                    className="price-slider"
-                  />
-                </div>
-                <span className="price-label">${filters.priceRange[1].toLocaleString()}</span>
+              <div className="dual-range-container">
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="10000" 
+                  step="100"
+                  value={filters.priceRange[1]}
+                  onChange={(e) => setFilters(f => ({ ...f, priceRange: [f.priceRange[0], +e.target.value] }))}
+                  className="price-slider"
+                />
+              </div>
+              <div className="price-range-labels">
+                <span>${filters.priceRange[0]}</span>
+                <span>${filters.priceRange[1].toLocaleString()}</span>
               </div>
               <div className="benchmark-note">
-                Benchmark: $1,050/kg (Global Avg)
+                Benchmark: $8-9 per plate
               </div>
             </div>
 
             <div className="filter-group">
-              <h4>Certifications</h4>
+              <h4>
+                Certifications
+                <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4M12 8h.01" />
+                </svg>
+              </h4>
               {['GMP', 'ISO 9001', 'US FDA', 'EU GMP'].map(cert => (
-                <div className="filter-checkbox" key={cert}>
+                <div className="filter-checkbox filled" key={cert}>
                   <input 
                     type="checkbox" 
                     id={`cert-${cert}`}
@@ -281,38 +286,76 @@ function Results() {
             </div>
 
             <div className="filter-group">
+              <h4>Location</h4>
+              {['India', 'Asia Pacific', 'Europe', 'North America'].map(loc => (
+                <div className="filter-checkbox filled" key={loc}>
+                  <input 
+                    type="checkbox" 
+                    id={`loc-${loc}`}
+                    checked={filters.locations.includes(loc)}
+                    onChange={(e) => {
+                      const newLocs = e.target.checked 
+                        ? [...filters.locations, loc] 
+                        : filters.locations.filter(l => l !== loc)
+                      setFilters(f => ({ ...f, locations: newLocs }))
+                    }}
+                  />
+                  <label htmlFor={`loc-${loc}`}>{loc}</label>
+                </div>
+              ))}
+              <div className="filter-checkbox">
+                <input 
+                  type="checkbox" 
+                  id="loc-other"
+                  checked={filters.locations.includes('Other')}
+                  onChange={(e) => {
+                    const newLocs = e.target.checked 
+                      ? [...filters.locations, 'Other'] 
+                      : filters.locations.filter(l => l !== 'Other')
+                    setFilters(f => ({ ...f, locations: newLocs }))
+                  }}
+                />
+                <label htmlFor="loc-other">Other Regions</label>
+              </div>
+            </div>
+
+            <div className="filter-group">
               <h4>
-                Min. Reliability Score
+                Min. Suitability Score
                 <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 16v-4M12 8h.01" />
                 </svg>
               </h4>
-              <div className="reliability-buttons">
-                {[1, 2, 3, 4, 5].map(score => (
-                  <button 
-                    key={score}
-                    className={`reliability-btn ${filters.minReliability >= score ? 'active' : ''}`}
-                    onClick={() => setFilters(f => ({ ...f, minReliability: score }))}
-                  >
-                    {score}
-                  </button>
-                ))}
+              <div className="suitability-slider-container">
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="100" 
+                  value={filters.minSuitability}
+                  onChange={(e) => setFilters(f => ({ ...f, minSuitability: +e.target.value }))}
+                  className="suitability-slider"
+                />
+              </div>
+              <div className="suitability-labels">
+                <span>0%</span>
+                <span className="current-value">{filters.minSuitability}%</span>
+                <span>100%</span>
               </div>
             </div>
           </div>
 
           <div className="filter-actions">
             <button className="reset-btn" onClick={() => setFilters({
-              estUnitCost: 1250,
+              estUnitCost: 12,
               estQuantity: 500,
               priceBenchmark: true,
-              suggestSubstitutes: false,
-              showCurrentPartner: false,
+              currentPartnerOnly: false,
               source: ['INT', 'EXT'],
-              priceRange: [500, 5000],
+              priceRange: [0, 10000],
               certifications: [],
-              minReliability: 0
+              locations: [],
+              minSuitability: 75
             })}>
               Reset
             </button>
@@ -324,11 +367,8 @@ function Results() {
         <main className="results-main">
           <div className="results-header">
             <div className="results-title-section">
-              <button className="back-link" onClick={() => navigate('/')}>
-                ← Back to Results
-              </button>
-              <h1>{vendors.length} Results for: {query}</h1>
-              <p className="results-subtitle">Top recommendations based on price, reliability, and delivery speed.</p>
+              <h1>({vendors.length}) Results for: {query}</h1>
+              <p className="results-subtitle">Top recommendations based on price, suitability, and delivery speed.</p>
             </div>
             <div className="sort-dropdown">
               <label>Sort by:</label>
@@ -344,7 +384,7 @@ function Results() {
           <section className="recommendations-section">
             <h2 className="section-title">
               <span className="section-marker"></span>
-              TOP RECOMMENDED OPPORTUNITIES
+              Top Recommended Opportunities
             </h2>
 
             {/* AI Analysis Banner */}
@@ -389,7 +429,7 @@ function Results() {
             <section className="other-section">
               <h2 className="section-title">
                 <span className="section-marker"></span>
-                OTHER RECOMMENDATIONS ({otherVendors.length})
+                Other Recommendations ({otherVendors.length})
               </h2>
               <div className="vendors-list">
                 {otherVendors.map(vendor => (
@@ -450,7 +490,7 @@ function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quanti
         </div>
 
         <div className="vendor-metrics">
-          <div className="metric">
+          <div className="metric highlight">
             <span className="metric-label">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="2" y="3" width="20" height="14" rx="2" />
@@ -459,12 +499,11 @@ function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quanti
               Total Est. Cost
             </span>
             <span className="metric-value primary">{formatCurrency(vendor.unitPrice * quantity)}</span>
-            <span className="metric-sub">@ {formatCurrency(vendor.unitPrice)} / kg</span>
           </div>
           
           <div className="metric">
-            <span className="metric-label">Available Qty</span>
-            <span className="metric-value">{vendor.availableQty.toLocaleString()} kg</span>
+            <span className="metric-label">Unit Price</span>
+            <span className="metric-value">{formatCurrency(vendor.unitPrice)} / plate</span>
           </div>
           
           <div className="metric">
@@ -475,6 +514,51 @@ function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quanti
           <div className="metric">
             <span className="metric-label">Delivery</span>
             <span className="metric-value">{vendor.leadTime}</span>
+          </div>
+
+          <div className="metric">
+            <span className="metric-label">Avail. Qty</span>
+            <span className="metric-value">{vendor.availableQty.toLocaleString()} plates</span>
+          </div>
+        </div>
+
+        <div className="vendor-details-row">
+          <div className="detail-item">
+            <span className="detail-label">Shelf Life</span>
+            <span className="detail-value">{vendor.shelfLife}</span>
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              </svg>
+              Packaging
+            </span>
+            <span className="detail-value">{vendor.packaging}</span>
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+              Storage
+            </span>
+            <span className="detail-value">{vendor.storage}</span>
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9 12l2 2 4-4" />
+              </svg>
+              Certifications
+            </span>
+            <div className="cert-badges-inline">
+              {vendor.certifications.map(cert => (
+                <span key={cert} className="cert-badge-small">{cert}</span>
+              ))}
+            </div>
           </div>
         </div>
 

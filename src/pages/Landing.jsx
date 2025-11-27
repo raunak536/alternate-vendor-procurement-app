@@ -131,31 +131,9 @@ function Landing() {
                 </div>
               </div>
 
-              <div className="dashboard-card risk-card">
-                <div className="card-header">
-                  <span className="card-label">GLOBAL SUPPLY WATCH</span>
-                  <svg className="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="2" y1="12" x2="22" y2="12" />
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                  </svg>
-                </div>
-                <h3 className="risk-title">Regional Risk Analysis</h3>
-                <div className="risk-alerts">
-                  {dashboard.riskAlerts.map((alert, idx) => (
-                    <div key={idx} className={`risk-alert ${alert.level === 'HIGH RISK' ? 'high' : 'moderate'}`}>
-                      <div className="alert-header">
-                        <span className="alert-icon">⚠</span>
-                        <span className={`alert-level ${alert.level === 'HIGH RISK' ? 'high' : 'moderate'}`}>
-                          {alert.level}: {alert.region}
-                        </span>
-                      </div>
-                      <p className="alert-description">{alert.description}</p>
-                      <div className="alert-affected">
-                        AFFECTED: {alert.affectedVendors} VENDORS
-                      </div>
-                    </div>
-                  ))}
+              <div className="dashboard-card placeholder-card">
+                <div className="placeholder-content">
+                  <span className="placeholder-text">Place holder</span>
                 </div>
               </div>
             </div>

@@ -3,10 +3,277 @@
   background: #f8f8f8;
 }
 
+.compare-layout {
+  display: flex;
+  gap: 0;
+}
+
+/* Import sidebar styles from Results - they're shared */
+.compare-page .filters-sidebar {
+  width: 260px;
+  background: #fff;
+  border-right: 1px solid #e5e5e5;
+  padding: 1.5rem;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  position: sticky;
+  top: 60px;
+  flex-shrink: 0;
+}
+
+.compare-page .filter-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.compare-page .filter-section:last-of-type {
+  border-bottom: none;
+}
+
+.compare-page .filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.compare-page .filter-header h3 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: 0.02em;
+}
+
+.compare-page .filter-icon {
+  margin-right: 0.5rem;
+}
+
+.compare-page .collapse-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+}
+
+.compare-page .filter-field {
+  margin-bottom: 1rem;
+}
+
+.compare-page .filter-field label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.03em;
+}
+
+.compare-page .filter-field input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+}
+
+.compare-page .filter-field input:focus {
+  outline: none;
+  border-color: #1a1a1a;
+}
+
+.compare-page .filter-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #1a1a1a;
+}
+
+.compare-page .toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+}
+
+.compare-page .toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.compare-page .toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ccc;
+  border-radius: 24px;
+  transition: 0.2s;
+}
+
+.compare-page .toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.compare-page .toggle-switch input:checked + .toggle-slider {
+  background: #1a1a1a;
+}
+
+.compare-page .toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+.compare-page .filter-group {
+  margin-bottom: 1.25rem;
+}
+
+.compare-page .filter-group h4 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.compare-page .info-icon {
+  color: #999;
+}
+
+.compare-page .filter-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.compare-page .filter-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1a1a1a;
+  margin-top: 2px;
+}
+
+.compare-page .filter-checkbox label {
+  font-size: 0.85rem;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.compare-page .filter-checkbox.filled input[type="checkbox"] {
+  accent-color: #1a1a1a;
+}
+
+.compare-page .dual-range-container {
+  position: relative;
+  height: 20px;
+  margin-bottom: 0.5rem;
+}
+
+.compare-page .price-slider {
+  width: 100%;
+  accent-color: #1a1a1a;
+}
+
+.compare-page .price-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.compare-page .benchmark-note {
+  font-size: 0.7rem;
+  color: #999;
+  background: #f9f9f9;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.compare-page .suitability-slider-container {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.compare-page .suitability-slider {
+  width: 100%;
+  accent-color: #1a1a1a;
+}
+
+.compare-page .suitability-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.compare-page .suitability-labels .current-value {
+  font-weight: 600;
+  color: #1a1a1a;
+  background: #f5f5f5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.compare-page .filter-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.compare-page .reset-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.compare-page .reset-btn:hover {
+  background: #f5f5f5;
+}
+
+.compare-page .apply-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: #0a5a8a;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.compare-page .apply-btn:hover {
+  background: #084a73;
+}
+
+/* Main Compare Content */
 .compare-main {
-  max-width: 1400px;
-  margin: 0 auto;
+  flex: 1;
   padding: 1.5rem 2rem;
+  min-width: 0;
 }
 
 .compare-header {
@@ -109,6 +376,10 @@
   background: #fafafa;
 }
 
+.table-row.highlight-row {
+  background: #fffbeb;
+}
+
 .attribute-column {
   width: 200px;
   flex-shrink: 0;
@@ -145,10 +416,6 @@
   margin-top: 0.15rem;
 }
 
-.info-icon {
-  color: #999;
-}
-
 .vendor-column {
   flex: 1;
   padding: 1rem 1.25rem;
@@ -164,6 +431,24 @@
 /* Vendor Header Card */
 .vendor-header-card {
   width: 100%;
+}
+
+.current-partner-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+}
+
+.current-partner-tag .partner-icon {
+  font-size: 0.7rem;
 }
 
 .vendor-badges {
@@ -389,6 +674,18 @@
   .table-row {
     min-width: 800px;
   }
+  
+  .compare-layout {
+    flex-direction: column;
+  }
+  
+  .compare-page .filters-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid #e5e5e5;
+  }
 }
 
 @media (max-width: 768px) {
@@ -398,4 +695,3 @@
     gap: 1rem;
   }
 }
-
