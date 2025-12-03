@@ -1,3 +1,6 @@
+// Backend API base URL
+const API_BASE_URL = 'http://localhost:8000'
+
 // Mock data for vendors with procurement-specific attributes
 export const mockVendors = [
   {
@@ -324,7 +327,27 @@ export const dashboardStats = {
   networkStatus: {
     activeVendors: 142,
     internalApproved: 85,
-    externalWatchlist: 57
+    externalWatchlist: 57,
+    topCountries: [
+      { name: 'India', vendors: 42, flag: '🇮🇳' },
+      { name: 'China', vendors: 28, flag: '🇨🇳' },
+      { name: 'Germany', vendors: 18, flag: '🇩🇪' },
+      { name: 'USA', vendors: 24, flag: '🇺🇸' },
+      { name: 'Japan', vendors: 12, flag: '🇯🇵' }
+    ]
+  },
+  skuCoverage: {
+    totalSkus: 2847,
+    categoriesCount: 12,
+    lastUpdated: '2 hours ago',
+    categories: [
+      { name: 'Lab Consumables', skus: 642 },
+      { name: 'APIs & Intermediates', skus: 518 },
+      { name: 'Packaging Materials', skus: 423 },
+      { name: 'Excipients', skus: 389 },
+      { name: 'Solvents & Chemicals', skus: 356 },
+      { name: 'Others', skus: 519 }
+    ]
   },
   riskAlerts: [
     {
@@ -340,6 +363,77 @@ export const dashboardStats = {
       affectedVendors: 5
     }
   ]
+}
+
+// Helper to convert API vendor data to frontend format with mock data for missing fields
+function transformApiVendor(vendor, index) {
+  // Parse price if available - show NA if not present
+  let unitPrice = null
+  let priceDisplay = 'NA'
+  if (vendor.price && vendor.price !== 'NA') {
+    const priceMatch = vendor.price.match(/[\d.]+/)
+    if (priceMatch) {
+      unitPrice = parseFloat(priceMatch[0])
+      priceDisplay = unitPrice
+    }
+  }
+  
+  // Parse certifications - show NA if not present
+  let certifications = []
+  if (vendor.certifications && Array.isArray(vendor.certifications)) {
+    certifications = vendor.certifications
+  } else if (vendor.quality_certifications && vendor.quality_certifications !== 'NA') {
+    certifications = vendor.quality_certifications.split(',').map(c => c.trim())
+  }
+
+  // Parse shelf life from storage conditions
+  let shelfLife = 'NA'
+  if (vendor.shelf_life_storage_conditions) {
+    const shelfMatch = vendor.shelf_life_storage_conditions.match(/(\d+\s*months?)/i)
+    if (shelfMatch) {
+      shelfLife = shelfMatch[1]
+    }
+  }
+
+  // Parse storage conditions
+  let storage = 'NA'
+  if (vendor.shelf_life_storage_conditions) {
+    const storageMatch = vendor.shelf_life_storage_conditions.match(/store\s+at\s+([^;]+)/i)
+    if (storageMatch) {
+      storage = storageMatch[1].trim()
+    }
+  }
+
+  // Use suitability_score from backend if available, otherwise fallback
+  const suitabilityScore = vendor.suitability_score ?? (95 - (index * 3))
+
+  return {
+    id: vendor.id || index + 1,
+    name: vendor.vendor_name,
+    source: 'EXT', // External vendors from deep research
+    isCurrentPartner: false,
+    isPreferred: index === 0, // First vendor as preferred (after sorting by score)
+    isBestValue: unitPrice !== null && unitPrice < 8,
+    unitPrice: unitPrice, // null if not available
+    unitPriceDisplay: priceDisplay, // For display purposes
+    totalEstCost: unitPrice !== null ? unitPrice * 500 : null,
+    availableQty: null, // NA - not in API data
+    region: vendor.region || 'NA',
+    leadTime: 'NA', // Not available from deep research
+    suitabilityScore: suitabilityScore, // Score from backend scoring module
+    certifications: certifications,
+    shelfLife: shelfLife,
+    packaging: vendor.packaging_format_volume_size || 'NA',
+    storage: storage,
+    locking: 'NA',
+    internalHistory: null,
+    riskAssessment: null, // NA - no internal risk data for external vendors
+    website: vendor.product_url || '',
+    lat: null,
+    lng: null,
+    // Original API data preserved for details view
+    _apiData: vendor
+  }
 }
 
 // Mock API service to simulate backend calls
@@ -362,6 +456,50 @@ export const api = {
 
   // Get vendors for a product with filters
   async getVendors(productQuery, filters = {}) {
+    // First try to fetch from real API for alternate vendors
+    try {
+      const response = await fetch(`${API_BASE_URL}/alternate-vendors?q=${encodeURIComponent(productQuery)}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.found && data.vendors.length > 0) {
+          // Transform API vendors to frontend format
+          let vendors = data.vendors.map((v, i) => transformApiVendor(v, i))
+          
+          // Apply frontend filters
+          if (filters.source?.length) {
+            vendors = vendors.filter(v => filters.source.includes(v.source))
+          }
+          if (filters.minSuitability) {
+            vendors = vendors.filter(v => v.suitabilityScore >= filters.minSuitability)
+          }
+          if (filters.certifications?.length) {
+            vendors = vendors.filter(v => 
+              filters.certifications.some(c => v.certifications.includes(c))
+            )
+          }
+          if (filters.priceRange) {
+            vendors = vendors.filter(v => 
+              v.unitPrice >= filters.priceRange[0] && v.unitPrice <= filters.priceRange[1]
+            )
+          }
+          if (filters.currentPartnerOnly) {
+            vendors = vendors.filter(v => v.isCurrentPartner)
+          }
+          if (filters.locations?.length) {
+            vendors = vendors.filter(v => filters.locations.includes(v.region))
+          }
+          
+          // Sort by suitability score
+          vendors.sort((a, b) => b.suitabilityScore - a.suitabilityScore)
+          
+          return vendors
+        }
+      }
+    } catch (error) {
+      console.log('Backend API not available, using mock data:', error.message)
+    }
+    
+    // Fallback to mock data
     await new Promise(r => setTimeout(r, 500))
     let vendors = [...mockVendors]
     

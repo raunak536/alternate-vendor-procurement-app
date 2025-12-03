@@ -18,15 +18,11 @@ function Results() {
   
   // Filter states
   const [filters, setFilters] = useState({
-    estUnitCost: 12,
-    estQuantity: 500,
-    priceBenchmark: true,
     currentPartnerOnly: false,
     source: ['INT', 'EXT'],
-    priceRange: [0, 10000],
     certifications: [],
     locations: [],
-    minSuitability: 75
+    minSuitability: 0
   })
 
   // Fetch vendors when query or filters change
@@ -43,12 +39,9 @@ function Results() {
   // Fetch AI analysis separately - always uses unfiltered data for accurate recommendations
   useEffect(() => {
     if (query) {
-      api.getAIAnalysis(query, { 
-        unitCost: filters.estUnitCost, 
-        quantity: filters.estQuantity 
-      }).then(setAiAnalysis)
+      api.getAIAnalysis(query, {}).then(setAiAnalysis)
     }
-  }, [query, filters.estUnitCost, filters.estQuantity])
+  }, [query])
 
   const handleSearch = (q) => {
     navigate(`/results?q=${encodeURIComponent(q)}`)
@@ -118,47 +111,6 @@ function Results() {
       <div className="results-layout">
         {/* Left Sidebar */}
         <aside className="filters-sidebar">
-          <div className="filter-section cost-adjustments">
-            <div className="filter-header">
-              <h3>Input Cost Adjustments</h3>
-              <button className="collapse-btn">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 15l-6-6-6 6" />
-                </svg>
-              </button>
-            </div>
-            
-            <div className="filter-field">
-              <label>EST. UNIT COST ($)</label>
-              <input 
-                type="number" 
-                value={filters.estUnitCost}
-                onChange={(e) => setFilters(f => ({ ...f, estUnitCost: +e.target.value }))}
-              />
-            </div>
-            
-            <div className="filter-field">
-              <label>EST. QUANTITY NEEDED</label>
-              <input 
-                type="number" 
-                value={filters.estQuantity}
-                onChange={(e) => setFilters(f => ({ ...f, estQuantity: +e.target.value }))}
-              />
-            </div>
-            
-            <div className="filter-toggle">
-              <span>Benchmark: INT vs EXT</span>
-              <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
-                  checked={filters.priceBenchmark}
-                  onChange={(e) => setFilters(f => ({ ...f, priceBenchmark: e.target.checked }))}
-                />
-                <span className="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
           <div className="filter-section">
             <div className="filter-header">
               <div className="filter-icon">
@@ -228,34 +180,6 @@ function Results() {
                   }}
                 />
                 <label htmlFor="sourceExt">External (EXT)</label>
-              </div>
-            </div>
-
-            <div className="filter-group">
-              <h4>
-                Price Range
-                <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4M12 8h.01" />
-                </svg>
-              </h4>
-              <div className="dual-range-container">
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="10000" 
-                  step="100"
-                  value={filters.priceRange[1]}
-                  onChange={(e) => setFilters(f => ({ ...f, priceRange: [f.priceRange[0], +e.target.value] }))}
-                  className="price-slider"
-                />
-              </div>
-              <div className="price-range-labels">
-                <span>${filters.priceRange[0]}</span>
-                <span>${filters.priceRange[1].toLocaleString()}</span>
-              </div>
-              <div className="benchmark-note">
-                Benchmark: $8-9 per plate
               </div>
             </div>
 
@@ -347,15 +271,11 @@ function Results() {
 
           <div className="filter-actions">
             <button className="reset-btn" onClick={() => setFilters({
-              estUnitCost: 12,
-              estQuantity: 500,
-              priceBenchmark: true,
               currentPartnerOnly: false,
               source: ['INT', 'EXT'],
-              priceRange: [0, 10000],
               certifications: [],
               locations: [],
-              minSuitability: 75
+              minSuitability: 0
             })}>
               Reset
             </button>
@@ -387,8 +307,8 @@ function Results() {
               Top Recommended Opportunities
             </h2>
 
-            {/* AI Analysis Banner */}
-            {aiAnalysis && (
+            {/* AI Analysis Banner - only show for mock data, not API vendors */}
+            {aiAnalysis && vendors.length > 0 && !vendors[0]._apiData && (
               <div className="ai-analysis-banner">
                 <div className="ai-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -418,6 +338,7 @@ function Results() {
                     onToggleSelect={() => toggleVendorSelection(vendor.id)}
                     formatCurrency={formatCurrency}
                     quantity={filters.estQuantity}
+                    searchQuery={query}
                   />
                 ))}
               </div>
@@ -439,7 +360,7 @@ function Results() {
                     isSelected={selectedVendors.includes(vendor.id)}
                     onToggleSelect={() => toggleVendorSelection(vendor.id)}
                     formatCurrency={formatCurrency}
-                    quantity={filters.estQuantity}
+                    searchQuery={query}
                   />
                 ))}
               </div>
@@ -461,7 +382,36 @@ function Results() {
   )
 }
 
-function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quantity }) {
+function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, searchQuery }) {
+  const navigate = useNavigate()
+  
+  // Helper to display value or NA
+  const displayValue = (value, suffix = '') => {
+    if (value === null || value === undefined || value === 'NA') {
+      return 'NA'
+    }
+    return suffix ? `${value} ${suffix}` : value
+  }
+
+  // Helper to format price or show NA
+  const displayPrice = (price, suffix = '') => {
+    if (price === null || price === undefined || price === 'NA') {
+      return 'NA'
+    }
+    return suffix ? `${formatCurrency(price)} ${suffix}` : formatCurrency(price)
+  }
+
+  // Navigate to vendor detail page
+  const handleViewDetails = () => {
+    navigate(`/vendor/${vendor.id}?q=${encodeURIComponent(searchQuery || '')}`)
+  }
+
+  // Format website URL for display
+  const formatUrl = (url) => {
+    if (!url) return null
+    return url.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0]
+  }
+
   return (
     <div className={`vendor-card ${vendor.isCurrentPartner ? 'current-partner' : ''}`}>
       {vendor.isCurrentPartner && (
@@ -490,42 +440,50 @@ function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quanti
         </div>
 
         <div className="vendor-metrics">
-          <div className="metric highlight">
-            <span className="metric-label">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="3" width="20" height="14" rx="2" />
-                <path d="M2 9h20" />
-              </svg>
-              Total Est. Cost
-            </span>
-            <span className="metric-value primary">{formatCurrency(vendor.unitPrice * quantity)}</span>
-          </div>
-          
           <div className="metric">
             <span className="metric-label">Unit Price</span>
-            <span className="metric-value">{formatCurrency(vendor.unitPrice)} / plate</span>
+            <span className="metric-value">{displayPrice(vendor.unitPrice, '/ plate')}</span>
           </div>
           
           <div className="metric">
             <span className="metric-label">Region</span>
-            <span className="metric-value">{vendor.region}</span>
-          </div>
-          
-          <div className="metric">
-            <span className="metric-label">Delivery</span>
-            <span className="metric-value">{vendor.leadTime}</span>
+            <span className="metric-value">{displayValue(vendor.region)}</span>
           </div>
 
+          {/* Product URL shown in tile */}
           <div className="metric">
-            <span className="metric-label">Avail. Qty</span>
-            <span className="metric-value">{vendor.availableQty.toLocaleString()} plates</span>
+            <span className="metric-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+              Product URL
+            </span>
+            {vendor.website ? (
+              <a 
+                href={vendor.website.startsWith('http') ? vendor.website : `https://${vendor.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="metric-value url-link"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {formatUrl(vendor.website)}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            ) : (
+              <span className="metric-value na-text">NA</span>
+            )}
           </div>
         </div>
 
         <div className="vendor-details-row">
           <div className="detail-item">
             <span className="detail-label">Shelf Life</span>
-            <span className="detail-value">{vendor.shelfLife}</span>
+            <span className="detail-value">{displayValue(vendor.shelfLife)}</span>
           </div>
           <div className="detail-item">
             <span className="detail-label">
@@ -534,7 +492,7 @@ function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quanti
               </svg>
               Packaging
             </span>
-            <span className="detail-value">{vendor.packaging}</span>
+            <span className="detail-value">{displayValue(vendor.packaging)}</span>
           </div>
           <div className="detail-item">
             <span className="detail-label">
@@ -544,7 +502,7 @@ function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quanti
               </svg>
               Storage
             </span>
-            <span className="detail-value">{vendor.storage}</span>
+            <span className="detail-value">{displayValue(vendor.storage)}</span>
           </div>
           <div className="detail-item">
             <span className="detail-label">
@@ -555,9 +513,13 @@ function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quanti
               Certifications
             </span>
             <div className="cert-badges-inline">
-              {vendor.certifications.map(cert => (
-                <span key={cert} className="cert-badge-small">{cert}</span>
-              ))}
+              {vendor.certifications && vendor.certifications.length > 0 ? (
+                vendor.certifications.map(cert => (
+                  <span key={cert} className="cert-badge-small">{cert}</span>
+                ))
+              ) : (
+                <span className="na-text">NA</span>
+              )}
             </div>
           </div>
         </div>
@@ -573,7 +535,12 @@ function VendorCard({ vendor, isSelected, onToggleSelect, formatCurrency, quanti
         )}
 
         <div className="vendor-actions">
-          <button className="view-details-btn">View Details</button>
+          <button 
+            className="view-details-btn"
+            onClick={handleViewDetails}
+          >
+            View Details →
+          </button>
           <label className="compare-checkbox">
             <input 
               type="checkbox" 

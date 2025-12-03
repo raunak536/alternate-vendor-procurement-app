@@ -104,36 +104,66 @@ function Landing() {
                   </svg>
                 </div>
                 <div className="network-stats">
-                  <div className="stat-main">
-                    <span className="stat-number">{dashboard.networkStatus.activeVendors}</span>
-                    <span className="stat-label">Active Vendors</span>
+                  <div className="stat-top">
+                    <div className="stat-main">
+                      <span className="stat-number">{dashboard.networkStatus.activeVendors}</span>
+                      <span className="stat-label">Active Vendors</span>
+                    </div>
+                    <div className="stat-meta">
+                      <span className="stat-meta-item">{dashboard.networkStatus.internalApproved} Internal</span>
+                      <span className="stat-meta-item">{dashboard.networkStatus.externalWatchlist} External</span>
+                    </div>
                   </div>
-                  <div className="stat-breakdown">
-                    <div className="stat-row">
-                      <span>Internal (Approved)</span>
-                      <span className="stat-value">{dashboard.networkStatus.internalApproved}</span>
+                  <div className="country-breakdown">
+                    <div className="breakdown-header">
+                      <span>Country</span>
+                      <span>Vendors</span>
                     </div>
-                    <div className="stat-row">
-                      <span>External (Watchlist)</span>
-                      <span className="stat-value">{dashboard.networkStatus.externalWatchlist}</span>
-                    </div>
-                    <div className="stat-bar">
-                      <div 
-                        className="stat-bar-internal" 
-                        style={{ width: `${(dashboard.networkStatus.internalApproved / dashboard.networkStatus.activeVendors) * 100}%` }}
-                      ></div>
-                      <div 
-                        className="stat-bar-external" 
-                        style={{ width: `${(dashboard.networkStatus.externalWatchlist / dashboard.networkStatus.activeVendors) * 100}%` }}
-                      ></div>
-                    </div>
+                    {dashboard.networkStatus.topCountries.map((country, idx) => (
+                      <div key={idx} className="breakdown-row">
+                        <span className="country-name">
+                          <span className="country-flag">{country.flag}</span>
+                          {country.name}
+                        </span>
+                        <span className="country-count">{country.vendors}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              <div className="dashboard-card placeholder-card">
-                <div className="placeholder-content">
-                  <span className="placeholder-text">Place holder</span>
+              <div className="dashboard-card sku-coverage-card">
+                <div className="card-header">
+                  <span className="card-label">SKU COVERAGE</span>
+                  <svg className="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                  </svg>
+                </div>
+                <div className="sku-stats">
+                  <div className="stat-top">
+                    <div className="stat-main">
+                      <span className="stat-number">{dashboard.skuCoverage.totalSkus.toLocaleString()}</span>
+                      <span className="stat-label">SKUs Indexed</span>
+                    </div>
+                    <div className="stat-meta">
+                      <span className="stat-meta-item">{dashboard.skuCoverage.categoriesCount} Categories</span>
+                      <span className="stat-meta-item">Updated {dashboard.skuCoverage.lastUpdated}</span>
+                    </div>
+                  </div>
+                  <div className="sku-breakdown">
+                    <div className="breakdown-header">
+                      <span>Category</span>
+                      <span>SKUs</span>
+                    </div>
+                    {dashboard.skuCoverage.categories.slice(0, 5).map((cat, idx) => (
+                      <div key={idx} className="breakdown-row">
+                        <span className="category-name">{cat.name}</span>
+                        <span className="category-count">{cat.skus}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

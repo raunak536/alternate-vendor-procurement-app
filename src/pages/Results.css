@@ -639,6 +639,35 @@
   color: #666;
 }
 
+.na-text {
+  font-size: 0.75rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* URL Link in Vendor Card */
+.metric-value.url-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #0a5a8a;
+  text-decoration: none;
+  font-size: 0.85rem;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric-value.url-link:hover {
+  text-decoration: underline;
+}
+
+.metric-value.url-link svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
 /* Internal History */
 .internal-history {
   display: flex;
@@ -685,10 +714,23 @@
   font-weight: 500;
   cursor: pointer;
   padding: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .view-details-btn:hover {
   text-decoration: underline;
+}
+
+.view-details-btn:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+.view-details-btn:disabled:hover {
+  text-decoration: none;
 }
 
 .compare-checkbox {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
-import { mockVendors } from '../data/mockData'
+import { api } from '../data/mockData'
 import './Compare.css'
 
 function Compare() {
@@ -12,29 +12,47 @@ function Compare() {
   
   const [quantity, setQuantity] = useState(500)
   const [searchQuery, setSearchQuery] = useState(productName)
+  const [allVendors, setAllVendors] = useState([])
+  const [loading, setLoading] = useState(true)
   
   // Filter states (same as Results page for consistency)
   const [filters, setFilters] = useState({
-    estUnitCost: 12,
-    estQuantity: 500,
-    priceBenchmark: true,
     currentPartnerOnly: false,
     source: ['INT', 'EXT'],
-    priceRange: [0, 10000],
     certifications: [],
     locations: [],
-    minSuitability: 75
+    minSuitability: 0
   })
   
-  // Get selected vendors from mock data
-  const selectedVendors = mockVendors.filter(v => vendorIds.includes(v.id))
+  // Fetch vendors when component mounts
+  useEffect(() => {
+    if (productName) {
+      setLoading(true)
+      api.getVendors(productName, {}).then(data => {
+        setAllVendors(data)
+        setLoading(false)
+      })
+    }
+  }, [productName])
+  
+  // Get selected vendors from fetched data
+  const selectedVendors = allVendors.filter(v => vendorIds.includes(v.id))
 
   const formatCurrency = (amount) => {
+    if (amount === null || amount === undefined) return 'NA'
     return new Intl.NumberFormat('en-US', { 
       style: 'currency', 
       currency: 'USD',
       maximumFractionDigits: 2
     }).format(amount)
+  }
+
+  // Helper to display value or NA
+  const displayValue = (value, suffix = '') => {
+    if (value === null || value === undefined || value === 'NA') {
+      return 'NA'
+    }
+    return suffix ? `${value} ${suffix}` : value
   }
 
   const handleBack = () => {
@@ -49,6 +67,17 @@ function Compare() {
   const handleSelectVendor = (vendorId) => {
     // Placeholder for vendor selection
     alert(`Vendor ${vendorId} selected for procurement`)
+  }
+
+  if (loading) {
+    return (
+      <div className="compare-page">
+        <Header showSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+        <div className="compare-empty">
+          <p>Loading vendors...</p>
+        </div>
+      </div>
+    )
   }
 
   if (selectedVendors.length < 2) {
@@ -70,47 +99,6 @@ function Compare() {
       <div className="compare-layout">
         {/* Left Sidebar - Same filters as Results */}
         <aside className="filters-sidebar">
-          <div className="filter-section cost-adjustments">
-            <div className="filter-header">
-              <h3>Input Cost Adjustments</h3>
-              <button className="collapse-btn">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 15l-6-6-6 6" />
-                </svg>
-              </button>
-            </div>
-            
-            <div className="filter-field">
-              <label>EST. UNIT COST ($)</label>
-              <input 
-                type="number" 
-                value={filters.estUnitCost}
-                onChange={(e) => setFilters(f => ({ ...f, estUnitCost: +e.target.value }))}
-              />
-            </div>
-            
-            <div className="filter-field">
-              <label>EST. QUANTITY NEEDED</label>
-              <input 
-                type="number" 
-                value={filters.estQuantity}
-                onChange={(e) => setFilters(f => ({ ...f, estQuantity: +e.target.value }))}
-              />
-            </div>
-            
-            <div className="filter-toggle">
-              <span>Benchmark: INT vs EXT</span>
-              <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
-                  checked={filters.priceBenchmark}
-                  onChange={(e) => setFilters(f => ({ ...f, priceBenchmark: e.target.checked }))}
-                />
-                <span className="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
           <div className="filter-section">
             <div className="filter-header">
               <div className="filter-icon">
@@ -180,34 +168,6 @@ function Compare() {
                   }}
                 />
                 <label htmlFor="sourceExt">External (EXT)</label>
-              </div>
-            </div>
-
-            <div className="filter-group">
-              <h4>
-                Price Range
-                <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4M12 8h.01" />
-                </svg>
-              </h4>
-              <div className="dual-range-container">
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="10000" 
-                  step="100"
-                  value={filters.priceRange[1]}
-                  onChange={(e) => setFilters(f => ({ ...f, priceRange: [f.priceRange[0], +e.target.value] }))}
-                  className="price-slider"
-                />
-              </div>
-              <div className="price-range-labels">
-                <span>${filters.priceRange[0]}</span>
-                <span>${filters.priceRange[1].toLocaleString()}</span>
-              </div>
-              <div className="benchmark-note">
-                Benchmark: $8-9 per plate
               </div>
             </div>
 
@@ -299,15 +259,11 @@ function Compare() {
 
           <div className="filter-actions">
             <button className="reset-btn" onClick={() => setFilters({
-              estUnitCost: 12,
-              estQuantity: 500,
-              priceBenchmark: true,
               currentPartnerOnly: false,
               source: ['INT', 'EXT'],
-              priceRange: [0, 10000],
               certifications: [],
               locations: [],
-              minSuitability: 75
+              minSuitability: 0
             })}>
               Reset
             </button>
@@ -394,7 +350,9 @@ function Compare() {
               {selectedVendors.map(vendor => (
                 <div key={vendor.id} className="vendor-column">
                   <div className="cost-display">
-                    <span className="cost-primary">{formatCurrency(vendor.unitPrice * quantity)}</span>
+                    <span className="cost-primary">
+                      {vendor.unitPrice != null ? formatCurrency(vendor.unitPrice * quantity) : 'NA'}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -407,7 +365,9 @@ function Compare() {
               </div>
               {selectedVendors.map(vendor => (
                 <div key={vendor.id} className="vendor-column">
-                  <span className="data-value">{formatCurrency(vendor.unitPrice)} / plate</span>
+                  <span className="data-value">
+                    {vendor.unitPrice != null ? `${formatCurrency(vendor.unitPrice)} / plate` : 'NA'}
+                  </span>
                 </div>
               ))}
             </div>
@@ -419,7 +379,9 @@ function Compare() {
               </div>
               {selectedVendors.map(vendor => (
                 <div key={vendor.id} className="vendor-column">
-                  <span className="data-value">{vendor.availableQty.toLocaleString()} plates</span>
+                  <span className="data-value">
+                    {vendor.availableQty != null ? `${vendor.availableQty.toLocaleString()} plates` : 'NA'}
+                  </span>
                 </div>
               ))}
             </div>
@@ -543,9 +505,13 @@ function Compare() {
               {selectedVendors.map(vendor => (
                 <div key={vendor.id} className="vendor-column">
                   <div className="cert-badges">
-                    {vendor.certifications.map(cert => (
-                      <span key={cert} className="cert-badge">{cert}</span>
-                    ))}
+                    {vendor.certifications && vendor.certifications.length > 0 ? (
+                      vendor.certifications.map(cert => (
+                        <span key={cert} className="cert-badge">{cert}</span>
+                      ))
+                    ) : (
+                      <span className="no-data">NA</span>
+                    )}
                   </div>
                 </div>
               ))}
