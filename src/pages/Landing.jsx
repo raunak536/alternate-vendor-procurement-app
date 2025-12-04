@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Header from '../components/Header'
+import { api } from '../data/mockData'
 import './Landing.css'
 
 function Landing() {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState([])
+  const [dashboard, setDashboard] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (query.length > 0) {
-      fetch(`http://localhost:8000/search?q=${encodeURIComponent(query)}`)
-        .then(res => res.json())
-        .then(data => setSuggestions(data))
+    api.getDashboard().then(setDashboard)
+  }, [])
+
+  useEffect(() => {
+    if (query.length > 1) {
+      api.searchProducts(query).then(setSuggestions)
     } else {
       setSuggestions([])
     }
@@ -25,85 +30,148 @@ function Landing() {
   }
 
   const selectSuggestion = (item) => {
-    setQuery(item)
+    setQuery(item.name)
     setSuggestions([])
-    navigate(`/results?q=${encodeURIComponent(item)}`)
+    navigate(`/results?q=${encodeURIComponent(item.name)}`)
   }
 
   return (
-    <div className="landing">
-      <div className="landing-content">
-        <div className="agent-section">
-          <img src="/assets/Biocon-Logo-Main.png" alt="Biocon Logo" className="biocon-logo" />
-          <h1 className="lumos-header">Lumos AI</h1>
-          <p className="lumos-subheader">Find the best supplier for your needs</p>
-        </div>
-
-        <form onSubmit={handleSearch} className="search-form">
-          <div className="trolley-container">
-            <svg className="trolley-icon" viewBox="0 0 100 100" fill="none">
-              {/* Cart body */}
-              <path d="M25 30 L30 60 L75 60 L82 30 Z" 
-                    fill="url(#cartGradient)" 
-                    stroke="#5568d3" 
-                    strokeWidth="2.5" 
-                    strokeLinejoin="round"/>
-              
-              {/* Cart basket lines */}
-              <line x1="35" y1="35" x2="32" y2="55" stroke="#fff" strokeWidth="1.5" opacity="0.6"/>
-              <line x1="45" y1="35" x2="42" y2="55" stroke="#fff" strokeWidth="1.5" opacity="0.6"/>
-              <line x1="55" y1="35" x2="52" y2="55" stroke="#fff" strokeWidth="1.5" opacity="0.6"/>
-              <line x1="65" y1="35" x2="62" y2="55" stroke="#fff" strokeWidth="1.5" opacity="0.6"/>
-              <line x1="75" y1="35" x2="72" y2="55" stroke="#fff" strokeWidth="1.5" opacity="0.6"/>
-              
-              {/* Handle */}
-              <path d="M20 30 L25 30" stroke="#5568d3" strokeWidth="3" strokeLinecap="round"/>
-              <path d="M15 20 L20 30 L25 30" stroke="#5568d3" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              
-              {/* Wheels */}
-              <circle cx="38" cy="70" r="6" fill="#5568d3" stroke="#5568d3" strokeWidth="2"/>
-              <circle cx="38" cy="70" r="3" fill="#fff"/>
-              <circle cx="67" cy="70" r="6" fill="#5568d3" stroke="#5568d3" strokeWidth="2"/>
-              <circle cx="67" cy="70" r="3" fill="#fff"/>
-              
-              <defs>
-                <linearGradient id="cartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#667eea" />
-                  <stop offset="100%" stopColor="#764ba2" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <div className="search-container">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="What would you like to source?"
-              className="search-input"
-              autoFocus
-            />
-            <button type="submit" className="search-button">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <div className="landing-page">
+      <Header />
+      
+      <main className="landing-main">
+        <div className="hero-section">
+          <h1 className="hero-title">INTELLIGENT PROCUREMENT</h1>
+          <p className="hero-subtitle">AI-Powered Vendor Discovery & Risk Analysis</p>
+          
+          <form onSubmit={handleSearch} className="search-form">
+            <div className="search-container">
+              <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
-            </button>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search chemical, material, SKU, or CAS number..."
+                className="search-input"
+                autoFocus
+              />
+              <button type="submit" className="search-button">
+                SEARCH
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+            
             {suggestions.length > 0 && (
-              <div className="suggestions">
-                {suggestions.map((sku, i) => (
-                  <div key={i} className="suggestion-item" onClick={() => selectSuggestion(sku.item)}>
-                    {sku.item}
+              <div className="suggestions-dropdown">
+                {suggestions.map((item) => (
+                  <div key={item.id} className="suggestion-item" onClick={() => selectSuggestion(item)}>
+                    <div className="suggestion-name">{item.name}</div>
+                    <div className="suggestion-meta">
+                      <span className="suggestion-cas">{item.casNumber}</span>
+                      <span className="suggestion-category">{item.category}</span>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
+          </form>
+        </div>
+
+        {dashboard && (
+          <div className="dashboard-section">
+            <div className="dashboard-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+              <span>PROCUREMENT INTELLIGENCE DASHBOARD</span>
+            </div>
+            <div className="dashboard-divider"></div>
+            
+            <div className="dashboard-grid">
+              <div className="dashboard-card network-card">
+                <div className="card-header">
+                  <span className="card-label">NETWORK STATUS</span>
+                  <svg className="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                </div>
+                <div className="network-stats">
+                  <div className="stat-top">
+                    <div className="stat-main">
+                      <span className="stat-number">{dashboard.networkStatus.activeVendors}</span>
+                      <span className="stat-label">Active Vendors</span>
+                    </div>
+                    <div className="stat-meta">
+                      <span className="stat-meta-item">{dashboard.networkStatus.internalApproved} Internal</span>
+                      <span className="stat-meta-item">{dashboard.networkStatus.externalWatchlist} External</span>
+                    </div>
+                  </div>
+                  <div className="country-breakdown">
+                    <div className="breakdown-header">
+                      <span>Country</span>
+                      <span>Vendors</span>
+                    </div>
+                    {dashboard.networkStatus.topCountries.map((country, idx) => (
+                      <div key={idx} className="breakdown-row">
+                        <span className="country-name">
+                          <span className="country-flag">{country.flag}</span>
+                          {country.name}
+                        </span>
+                        <span className="country-count">{country.vendors}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="dashboard-card sku-coverage-card">
+                <div className="card-header">
+                  <span className="card-label">SKU COVERAGE</span>
+                  <svg className="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                  </svg>
+                </div>
+                <div className="sku-stats">
+                  <div className="stat-top">
+                    <div className="stat-main">
+                      <span className="stat-number">{dashboard.skuCoverage.totalSkus.toLocaleString()}</span>
+                      <span className="stat-label">SKUs Indexed</span>
+                    </div>
+                    <div className="stat-meta">
+                      <span className="stat-meta-item">{dashboard.skuCoverage.categoriesCount} Categories</span>
+                      <span className="stat-meta-item">Updated {dashboard.skuCoverage.lastUpdated}</span>
+                    </div>
+                  </div>
+                  <div className="sku-breakdown">
+                    <div className="breakdown-header">
+                      <span>Category</span>
+                      <span>SKUs</span>
+                    </div>
+                    {dashboard.skuCoverage.categories.slice(0, 5).map((cat, idx) => (
+                      <div key={idx} className="breakdown-row">
+                        <span className="category-name">{cat.name}</span>
+                        <span className="category-count">{cat.skus}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </form>
-      </div>
+        )}
+      </main>
     </div>
   )
 }
 
 export default Landing
-

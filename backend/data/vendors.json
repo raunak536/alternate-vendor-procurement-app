@@ -1,0 +1,100 @@
+{
+  "queries": {
+    "tsa 3p irr neutralizers": {
+      "query_id": "tsa-3p-irr-neutralizers",
+      "query_text": "TSA 3P IRR Neutralizers",
+      "enriched_query": "1. **Enriched Procurement Query**:\n- Seeking suppliers for \"Tryptic Soy Agar (TSA) with 3-Part Irradiated (IRR) Neutralizers\".\n- Intended use: **Not specified** (please specify if for environmental monitoring, sterility testing, validation, etc.).\n- Format/packaging: **Not specified** (please specify plate size, volume, or other format preferences if known).\n- Quantity requirement: **Not specified**.\n- Product should contain triple neutralizers (commonly lecithin, polysorbate 80, and sodium thiosulfate) and must be irradiated to achieve sterility assurance.\n- Must be compliant with relevant pharmacopeial standards (e.g., USP, EP, JP) – **open, unless specified**.\n- Certificate of Analysis (CoA) and sterility documentation preferred.\n- Alternate names/synonyms: \"Tryptic Soy Agar with Neutralizers\", \"Irradiated TSA 3N\", \"TSA 3-Component Neutralizing Agar\", \"TSA with Lecithin/Polysorbate/Sodium Thiosulfate\", \"TSA neutralizing media irradiated\".\n- Please provide catalog numbers and technical data sheets if available.\n\n2. **Key Comparison Attributes**:\n- **Sterilization Method** (gamma irradiation confirmation and certificate)\n- **Type and concentration of neutralizers** (lecithin, polysorbate 80, sodium thiosulfate; exact formulation)\n- **Regulatory compliance/certifications** (pharmacopeial conformity, GMP, CoA availability)\n- **Packaging/format** (plates, bottles, tubes; size and quantity per pack)\n- **Shelf life and storage conditions**",
+      "last_updated": "2025-12-03 15:57:21",
+      "research_model": "o4-mini-deep-research",
+      "vendors": [
+        {
+          "id": 1,
+          "vendor_name": "MilliporeSigma (Merck)",
+          "region": "Global",
+          "product_description": "Ready-to-use contact plates (55 mm) of Tryptic Soy Agar with neutralizers (lecithin, polysorbate 80 (Tween®), sodium thiosulfate, L-histidine); gamma-irradiated and triple-wrapped; pack of 10 plates (10 plates/triple pack)",
+          "product_url": "https://www.merckmillipore.com/GE/en/product/mm/146231",
+          "availability_status": "available",
+          "certifications": [
+            "USP",
+            "EP"
+          ],
+          "price": "USD $106.00 / 20 pack",
+          "source_urls": [
+            "https://www.merckmillipore.com/GE/en/product/mm/146231",
+            "https://www.merckmillipore.com/GE/en/product/mm/146231",
+            "https://www.merckmillipore.com/GE/en/product/mm/146231",
+            "https://www.sigmaaldrich.com/US/en/product/mm/146231"
+          ],
+          "crawled_data": null,
+          "crawled_at": null,
+          "extracted_info": {},
+          "sterilization_method": "Gamma irradiation (post-packaging sterilization) ([www.merckmillipore.com](https://www.merckmillipore.com/GE/en/product/mm/146231#:~:text=sterility))",
+          "neutralizers": [
+            "Lecithin",
+            "Polysorbate 80",
+            "Sodium thiosulfate"
+          ],
+          "packaging_format": "55 mm contact plates, triple-wrapped; 10 plates per pack ([www.merckmillipore.com](https://www.merckmillipore.com/GE/en/product/mm/146231#:~:text=packaging))",
+          "shelf_life": "NA",
+          "storage_condition": "Protect from light; keep loosely closed and dry ([www.merckmillipore.com](https://www.merckmillipore.com/GE/en/product/mm/146231#:~:text=protect%20from%20light%20,closed%20and%20dry))"
+        },
+        {
+          "id": 2,
+          "vendor_name": "Thermo Fisher Scientific",
+          "region": "Global",
+          "product_description": "Triple-wrapped sterile pack of Tryptic Soy Agar (55 mm plates) with neutralizers (lecithin, polysorbate 80, sodium thiosulfate, L-histidine) and a VHP indicator; 100 plates per pack (with 2D barcode)",
+          "product_url": "https://www.thermofisher.com/order/catalog/product/R111TW1",
+          "availability_status": "available",
+          "certifications": [
+            "NA"
+          ],
+          "price": "NA",
+          "source_urls": [
+            "https://www.thermofisher.com/order/catalog/product/R111TW1",
+            "https://www.thermofisher.com/order/catalog/product/R111TW1"
+          ],
+          "crawled_data": null,
+          "crawled_at": null,
+          "extracted_info": {},
+          "sterilization_method": "Gamma irradiation (triple-wrapped sterilization)",
+          "neutralizers": [
+            "Lecithin",
+            "Polysorbate 80",
+            "Sodium thiosulfate",
+            "L-Histidine"
+          ],
+          "packaging_format": "55 mm contact plates, triple-wrapped; 100 plates per pack ([www.thermofisher.com](https://www.thermofisher.com/order/catalog/product/R111TW1#:~:text=Quantity100%2Fpk))",
+          "shelf_life": "43 weeks ([www.thermofisher.com](https://www.thermofisher.com/order/catalog/product/R111TW1#:~:text=Quantity100%2Fpk))",
+          "storage_condition": "Room temperature (no refrigeration required) ([www.thermofisher.com](https://www.thermofisher.com/order/catalog/product/R111TW1#:~:text=Using%20plates%20with%20an%20improved,Please%20inquire))"
+        },
+        {
+          "id": 3,
+          "vendor_name": "BD (Becton Dickinson)",
+          "region": "Global",
+          "product_description": "BD BBL Trypticase Soy Agar with Lecithin and Polysorbate 80 (sterile pack of Rodac contact plates); 100 plates per pack (gamma-irradiated, multiwrapped)",
+          "product_url": "https://www.bd.com/en-us/products-and-solutions/products/product-page.215342",
+          "availability_status": "unavailable",
+          "certifications": [
+            "NA"
+          ],
+          "price": "NA",
+          "source_urls": [
+            "https://www.fishersci.co.uk/shop/products/bbl-trypticase-soy-agar-lecithin-polysorbate-80-sterile-pack-media-rodac-plates/p-4770203",
+            "https://www.fishersci.co.uk/shop/products/bbl-trypticase-soy-agar-lecithin-polysorbate-80-sterile-pack-media-rodac-plates/p-4770203"
+          ],
+          "crawled_data": null,
+          "crawled_at": null,
+          "extracted_info": {},
+          "sterilization_method": "Gamma irradiation (sterile pack, multiwrap) ([www.fishersci.co.uk](https://www.fishersci.co.uk/shop/products/bbl-trypticase-soy-agar-lecithin-polysorbate-80-sterile-pack-media-rodac-plates/p-4770203#:~:text=Plated%20media%20in%20gamma,from%20vaporized%20hydrogen%20peroxide%20exposure))",
+          "neutralizers": [
+            "Lecithin",
+            "Polysorbate 80"
+          ],
+          "packaging_format": "65 mm Rodac contact plates; 100 plates per pack (sterile multiwrap) ([www.fishersci.co.uk](https://www.fishersci.co.uk/shop/products/bbl-trypticase-soy-agar-lecithin-polysorbate-80-sterile-pack-media-rodac-plates/p-4770203#:~:text=222207%20%20,product%20page%20for%20possible%20alternatives))",
+          "shelf_life": "112 days ([www.fishersci.co.uk](https://www.fishersci.co.uk/shop/products/bbl-trypticase-soy-agar-lecithin-polysorbate-80-sterile-pack-media-rodac-plates/p-4770203#:~:text=222207%20%20,product%20page%20for%20possible%20alternatives))",
+          "storage_condition": "2–8 °C (refrigerated) ([www.fishersci.co.uk](https://www.fishersci.co.uk/shop/products/bbl-trypticase-soy-agar-lecithin-polysorbate-80-sterile-pack-media-rodac-plates/p-4770203#:~:text=Specifications))"
+        }
+      ]
+    }
+  }
+}
