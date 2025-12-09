@@ -16,6 +16,11 @@ Usage:
     python pipeline.py fetch-spec "<query-id>" --vendor-id 1 --spec "price"
     python pipeline.py list
     python pipeline.py show "<query-id>"
+
+TSA 3P IRR Neutralizers
+E.coli HcDNA kits; Cat #: 4458435
+PROTEINA MIX-N-GO ELISAKIT F600
+
 """
 
 import argparse
